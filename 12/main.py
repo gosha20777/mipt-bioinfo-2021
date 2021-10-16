@@ -22,16 +22,24 @@ def parse_args(args) -> argparse.Namespace:
 def calculate(input_path: str) -> str:
     with open(input_path, 'r') as file:
         n = int(file.readline())
-        rows = {row[:n-1]: row[1:n] for row in file.readlines()}
-        while len(rows) != 1:
-            temp_rows = dict()
-            for k, v in rows.items():
-                if v in rows.keys():
-                    temp_rows[k + v[-1]] = v[0] + rows[v]
-            rows = temp_rows
-        k = list(rows.keys())[0]
-        v = rows[k][-1]
-        return f'{k}{v}'
+        elements = set()
+        seq = ['1' for _ in range(n)]
+        elements.add('1' * n)
+        pow = 2 ** n
+        idx = 1
+
+        while idx < pow:
+            temp_seq = seq[-n+1:]
+            if ''.join(temp_seq) + '0' in elements:
+                seq.append('1')
+                if ''.join(temp_seq) + '1' not in elements:
+                    elements.add(''.join(temp_seq) + '1')
+                    idx += 1
+            else:
+                seq.append('0')
+                elements.add(''.join(temp_seq) + '0')
+                idx += 1
+        return ''.join(seq[:-n+1])
 
 
 def main(args=None) -> None:
